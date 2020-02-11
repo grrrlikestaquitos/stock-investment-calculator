@@ -3,7 +3,15 @@ import React, { Component } from 'react'
 const Item = {
   display: 'flex',
   flexDirection: 'row',
-  justifyContent: 'space-evenly'
+  justifyContent: 'space-evenly',
+  marginBottom: 50
+}
+
+const SubItem = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  flexDirection: 'column'
 }
 
 const ItemHeader = {
@@ -66,15 +74,43 @@ export default class App extends Component {
         <h3 style={ItemHeader}>Investment Calculations</h3>
 
         <div style={Item}>
-          <p>1 Year: ${this.calculateReturnOnInvestmentIn(1).toLocaleString()}</p>
-          <p>5 Years: ${this.calculateReturnOnInvestmentIn(5).toLocaleString()}</p>
-          <p>10 Years: ${this.calculateReturnOnInvestmentIn(10).toLocaleString()}</p>
+          <div style={SubItem}>
+            <p>1 Year: ${this.calculateReturnOnInvestmentIn(1).toLocaleString()}</p>
+            <p>Contibutions: ${this.calculateTotalContributions(1).toLocaleString()}</p>
+            <p>Profit: {this.calculateGrossProfit(1)}</p>
+          </div>
+
+          <div style={SubItem}>
+            <p>5 Years: ${this.calculateReturnOnInvestmentIn(5).toLocaleString()}</p>
+            <p>Contibutions: ${this.calculateTotalContributions(5).toLocaleString()}</p>
+            <p>Profit: {this.calculateGrossProfit(5)}</p>
+          </div>
+
+          <div style={SubItem}>
+            <p>10 Years: ${this.calculateReturnOnInvestmentIn(10).toLocaleString()}</p>
+            <p>Contibutions: ${this.calculateTotalContributions(10).toLocaleString()}</p>
+            <p>Profit: {this.calculateGrossProfit(10)}</p>
+          </div>
         </div>
 
         <div style={Item}>
-          <p>15 Year: ${this.calculateReturnOnInvestmentIn(15).toLocaleString()}</p>
-          <p>20 Years: ${this.calculateReturnOnInvestmentIn(20).toLocaleString()}</p>
-          <p>30 Years: ${this.calculateReturnOnInvestmentIn(30).toLocaleString()}</p>
+          <div style={SubItem}>
+            <p>15 Years: ${this.calculateReturnOnInvestmentIn(15).toLocaleString()}</p>
+            <p>Contibutions: ${this.calculateTotalContributions(15).toLocaleString()}</p>
+            <p>Profit: {this.calculateGrossProfit(15)}</p>
+          </div>
+
+          <div style={SubItem}>
+            <p>20 Years: ${this.calculateReturnOnInvestmentIn(20).toLocaleString()}</p>
+            <p>Contibutions: ${this.calculateTotalContributions(20).toLocaleString()}</p>
+            <p>Profit: {this.calculateGrossProfit(20)}</p>
+          </div>
+
+          <div style={SubItem}>
+            <p>30 Years: ${this.calculateReturnOnInvestmentIn(30).toLocaleString()}</p>
+            <p>Contibutions: ${this.calculateTotalContributions(30).toLocaleString()}</p>
+            <p>Profit: {this.calculateGrossProfit(30)}</p>
+          </div>
         </div>
 
         <h6 style={ItemHeader}>Developed & Maintained by Andrei Villasana - Seattle, WA</h6>
@@ -84,10 +120,28 @@ export default class App extends Component {
   }
 
   calculateTotalContributions(years) {
-    const { monthlyContribution, initialInvestment } = this.state
+    const { monthlyContribution, initialInvestment, monthlyContributionIncrease, frequencyAddition } = this.state
+    const yearsInMonths = years * 12
 
-    const totalContributions = initialInvestment + ((monthlyContribution * 12) * years)
+    let totalContributions = initialInvestment + monthlyContribution
+
+    for (let month = 1; month < yearsInMonths; month++) {
+      const isNewAdditionPeriod = month % frequencyAddition
+
+      if (isNewAdditionPeriod === 0) {
+        totalContributions += monthlyContributionIncrease
+      }
+      
+      totalContributions += monthlyContribution
+    }
     return totalContributions
+  }
+
+  calculateGrossProfit(years) {
+    const profit = this.calculateReturnOnInvestmentIn(years) - this.calculateTotalContributions(years)
+    const profitPercent = profit / this.calculateReturnOnInvestmentIn(years) * 100
+
+    return `$${profit.toLocaleString()} - ${profitPercent.toLocaleString()}%`
   }
 
   calculateReturnOnInvestmentIn(years) {
